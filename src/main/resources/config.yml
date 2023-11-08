@@ -1,0 +1,14 @@
+main:
+  player-whitelist:
+    - wshycaa
+  banRuleNumber: 5
+  clearTime-byDay: 3
+  specialPlayerRuleNumber:
+    wshycaa: 10
+  checkInvNameWhitelist:
+    - ""
+  kickinfo: ""
+  invname_contain_blacklist:
+    - "nocheckinv1"
+    - "nocheckinv2"
+items:

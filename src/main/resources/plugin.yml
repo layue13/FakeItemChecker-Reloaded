@@ -1,0 +1,13 @@
+name: FakeItemChecker-Reloaded
+version: '${version}'
+main: com.layue13.fakeitemcheckerreloaded.FakeItemCheckerReloaded
+authors: ['Layue13','wshycaa']
+commands:
+  fic:
+    usage: /fic
+    permission: fic.default
+permissions:
+  fic.default:
+    default: op
+softdepend:
+  - PlayerDataSQL
