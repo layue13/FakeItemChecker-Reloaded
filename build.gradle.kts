@@ -1,6 +1,7 @@
 plugins {
     id("java")
     id("io.freefair.lombok") version "8.4"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 group = "com.layue13"
@@ -26,6 +27,9 @@ dependencies {
     compileOnly(fileTree("libs") {
         include("*.jar")
     })
+    implementation("com.mysql:mysql-connector-j:8.2.0")
+    // https://mvnrepository.com/artifact/org.hibernate/hibernate-core
+    implementation("org.hibernate:hibernate-core:5.6.15.Final")
 }
 
 val targetJavaVersion = 8
