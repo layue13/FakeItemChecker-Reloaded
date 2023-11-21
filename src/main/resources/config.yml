@@ -2,3 +2,6 @@ db:
   username: root
   password:
   url: jdbc:mysql://localhost:3306/fic
+ignored_inventory:
+  - '菜单'
+  - ''
