@@ -23,7 +23,34 @@ public class AdminCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (!label.equalsIgnoreCase("fic")) {
+            return false;
+        }
+        if (!(sender instanceof Player)) {
+            sender.sendMessage("You should send the command as player.");
+            return false;
+        }
 
+        Player player = (Player) sender;
+        switch (Optional.of(args[0]).orElse("").toLowerCase()) {
+            case "reload":
+                this.plugin.onDisable();
+                this.plugin.onEnable();
+                break;
+            case "add":
+                if (!sender.isOp()) {
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou don't have permission!"));
+                    return false;
+                }
+                ItemStack itemInHand = ((Player) sender).getItemInHand();
+                if (itemInHand.getType().equals(Material.AIR)) {
+                    return false;
+                }
+                break;
+            default:
+                Arrays.asList(ChatColor.translateAlternateColorCodes('&', "&e/fic reload"), ChatColor.translateAlternateColorCodes('&', "&e/fic add")).forEach(sender::sendMessage);
+                break;
+        }
         return true;
     }
 }

@@ -1,16 +1,16 @@
 package com.layue13.fakeitemcheckerreloaded.entity;
 
-import org.bukkit.inventory.ItemStack;
+import lombok.*;
 import org.bukkit.permissions.Permission;
 
-import javax.persistence.*;
 
-@Entity
-@Table(name = "rules")
+@Builder
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Rule {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private ItemStack item;
-    private String permission;
+    private String item;
+    private Permission permission;
 }
