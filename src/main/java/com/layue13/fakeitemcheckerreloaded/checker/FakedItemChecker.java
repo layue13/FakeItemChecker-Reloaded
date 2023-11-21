@@ -1,7 +1,7 @@
 package com.layue13.fakeitemcheckerreloaded.checker;
 
 import com.google.common.base.Preconditions;
-import com.layue13.fakeitemcheckerreloaded.dao.Dao;
+import com.layue13.fakeitemcheckerreloaded.dao.Repository;
 import com.layue13.fakeitemcheckerreloaded.entity.Rule;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -10,9 +10,9 @@ import java.util.Arrays;
 import java.util.function.Function;
 
 public class FakedItemChecker {
-    private final Dao<Rule,Long> ruleRepository;
+    private final Repository<Rule,Long> ruleRepository;
 
-    public FakedItemChecker(Dao<Rule,Long> ruleRepository) {
+    public FakedItemChecker(Repository<Rule,Long> ruleRepository) {
         Preconditions.checkNotNull(ruleRepository);
         this.ruleRepository = ruleRepository;
     }

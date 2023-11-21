@@ -2,7 +2,7 @@ package com.layue13.fakeitemcheckerreloaded.dao;
 
 import java.sql.Connection;
 
-public abstract class AbstractBukkitRepository<T,ID> implements Dao<T,ID>{
+public abstract class AbstractBukkitRepository<T,ID> implements Repository<T,ID> {
     protected Connection connection;
 
     public AbstractBukkitRepository(Connection connection) {

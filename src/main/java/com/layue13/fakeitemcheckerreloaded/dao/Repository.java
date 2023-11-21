@@ -9,7 +9,7 @@ import java.util.Optional;
  * @param <ID> represent ID type.
  */
 
-public interface Dao<T,ID> {
+public interface Repository<T,ID> {
     void init();
     Optional<T> get(ID id);
 
