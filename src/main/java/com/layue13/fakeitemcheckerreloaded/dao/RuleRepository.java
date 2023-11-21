@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
 
-public class RuleRepository extends AbstractBukkitRepository<Rule, Long> {
+public class RuleRepository extends SimpleMysqlRepository<Rule, Long> {
     public RuleRepository(Connection connection) {
         super(connection);
     }

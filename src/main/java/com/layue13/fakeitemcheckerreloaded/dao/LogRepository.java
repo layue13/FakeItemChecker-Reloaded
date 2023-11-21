@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
-public class LogRepository extends AbstractBukkitRepository<Log,UUID> {
+public class LogRepository extends SimpleMysqlRepository<Log,UUID> {
 
     public LogRepository(Connection connection) {
         super(connection);
