@@ -1,23 +1,20 @@
 package com.layue13.fakeitemcheckerreloaded.checker;
 
 import com.google.common.base.Preconditions;
-import com.layue13.fakeitemcheckerreloaded.dao.RuleRepository;
+import com.layue13.fakeitemcheckerreloaded.dao.Dao;
+import com.layue13.fakeitemcheckerreloaded.entity.Rule;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.function.Function;
 
 public class FakedItemChecker {
-    private final RuleRepository ruleRepository;
-    private final Collection<String> ignoredInventoryTitles;
+    private final Dao<Rule,Long> ruleRepository;
 
-    public FakedItemChecker(RuleRepository ruleRepository, Collection<String> ignoredInventoryTitles, Function<Player, Void> doAfterError) {
+    public FakedItemChecker(Dao<Rule,Long> ruleRepository) {
         Preconditions.checkNotNull(ruleRepository);
-        Preconditions.checkNotNull(doAfterError);
         this.ruleRepository = ruleRepository;
-        this.ignoredInventoryTitles = ignoredInventoryTitles;
     }
 
     public void check(Player holder, ItemStack itemStack, Function<Player, Void> doAfterIfError) {
@@ -31,12 +28,9 @@ public class FakedItemChecker {
         });
     }
 
-    public void check(Player holder, Inventory inventory, Function<Player, Void> doAfterIfError) {
-        if (ignoredInventoryTitles.contains(inventory.getTitle())) {
-            return;
-        }
-        inventory.forEach(itemStack -> {
-            check(holder, itemStack, doAfterIfError);
+    public void check(Player holder, ItemStack[] itemStacks, Function<Player, Void> doAfterIfError) {
+        Arrays.stream(itemStacks).forEach(itemStack -> {
+            check(holder,itemStack,doAfterIfError);
         });
     }
 }
