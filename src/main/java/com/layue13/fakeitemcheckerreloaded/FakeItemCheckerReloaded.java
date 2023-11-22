@@ -5,8 +5,8 @@ import com.layue13.fakeitemcheckerreloaded.command.AdminCommand;
 import com.layue13.fakeitemcheckerreloaded.dao.LogRepository;
 import com.layue13.fakeitemcheckerreloaded.dao.RuleRepository;
 import com.layue13.fakeitemcheckerreloaded.listener.PlayerActionListener;
+import com.layue13.fakeitemcheckerreloaded.listener.PlayerDataSQLListener;
 import lombok.Getter;
-import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -46,8 +46,12 @@ public final class FakeItemCheckerReloaded extends JavaPlugin {
         ruleRepository.init();
         logRepository.init();
 
-        Bukkit.getServer().getPluginCommand("fic").setExecutor(new AdminCommand(this));
-        Bukkit.getServer().getPluginManager().registerEvents(new PlayerActionListener(this), this);
+        Optional.of(this.getServer().getPluginManager().getPlugin("PlayerDataSQL")).ifPresent(plugin -> {
+            this.getLogger().info("Hook to the plugin: " + plugin.getName() + " Version:" + plugin.getDescription().getVersion());
+            this.getServer().getPluginManager().registerEvents(new PlayerDataSQLListener(this), this);
+        });
+        this.getServer().getPluginCommand("fic").setExecutor(new AdminCommand(this));
+        this.getServer().getPluginManager().registerEvents(new PlayerActionListener(this), this);
     }
 
     @Override

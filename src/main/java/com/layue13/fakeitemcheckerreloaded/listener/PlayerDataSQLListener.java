@@ -1,5 +1,6 @@
 package com.layue13.fakeitemcheckerreloaded.listener;
 
+import cc.bukkitPlugin.pds.events.PlayerDataLoadCompleteEvent;
 import com.layue13.fakeitemcheckerreloaded.FakeItemCheckerReloaded;
 import com.layue13.fakeitemcheckerreloaded.ban.BanInfo;
 import com.layue13.fakeitemcheckerreloaded.checker.FakedItemChecker;
@@ -9,8 +10,6 @@ import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -18,29 +17,23 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.UUID;
 
-public class PlayerActionListener implements Listener {
+public class PlayerDataSQLListener implements Listener {
     private final FakeItemCheckerReloaded plugin;
     private final FakedItemChecker checker;
-
     private final Collection<String> ignoredInventoryTitles;
 
-    public PlayerActionListener(FakeItemCheckerReloaded plugin) {
+
+    public PlayerDataSQLListener(FakeItemCheckerReloaded plugin) {
         this.plugin = plugin;
         this.checker = new FakedItemChecker(plugin.getRuleRepository());
         ignoredInventoryTitles = plugin.getConfig().getStringList("ignored_inventory");
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onInventoryOpenEvent(InventoryOpenEvent event) {
-        Player player = (Player) event.getPlayer();
-        checkInventory(player, event, event.getInventory());
-        checkInventory(player, event, player.getInventory());
-    }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlayerPickupItemEvent(PlayerPickupItemEvent event) {
-        Player player = event.getPlayer();
-        checkInventory(player, event, player.getInventory());
+    public void onPlayerDataLoadCompleteEvent(PlayerDataLoadCompleteEvent event) {
+        checkInventory(event.getPlayer(), event, event.getPlayer().getInventory());
+        checkInventory(event.getPlayer(), event, event.getPlayer().getEnderChest());
     }
 
     public void checkInventory(Player player, Event event, Inventory inventory) {

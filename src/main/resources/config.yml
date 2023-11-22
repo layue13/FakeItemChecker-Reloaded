@@ -5,7 +5,7 @@ db:
 ignored_inventory:
   - '菜单'
   - ''
-# BanMode Options: BungeeBan,BukkitBan
-# BungeeBan need the plugin called "BungeeBan"
+# BanMode Options: BUNGEE_BAN,BUKKIT_BAN
+# BUNGEE_BAN needs the plugin called "BungeeBan", can be downloaded in following url
 # https://www.spigotmc.org/resources/bungeeban.8/
-ban_mode: "BukkitBan"
+ban_mode: "BUKKIT_BAN"

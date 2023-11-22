@@ -26,7 +26,6 @@ dependencies {
     compileOnly(fileTree("libs") {
         include("*.jar")
     })
-    compileOnly("com.github.DevLeoko.AdvancedBan:AdvancedBan:v2.3.0")
 }
 
 val targetJavaVersion = 8
