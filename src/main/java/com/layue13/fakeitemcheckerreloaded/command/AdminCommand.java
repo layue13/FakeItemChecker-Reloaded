@@ -1,8 +1,7 @@
 package com.layue13.fakeitemcheckerreloaded.command;
 
-import com.layue13.fakeitemcheckerreloaded.FakeItemCheckerReloaded;
+import com.layue13.fakeitemcheckerreloaded.FakeItemCheckerPlugin;
 import com.layue13.fakeitemcheckerreloaded.entity.Rule;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -13,13 +12,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.permissions.Permission;
 
 import java.util.Arrays;
-import java.util.Optional;
 
 
 public class AdminCommand implements CommandExecutor {
-    private final FakeItemCheckerReloaded plugin;
+    private final FakeItemCheckerPlugin plugin;
 
-    public AdminCommand(FakeItemCheckerReloaded plugin) {
+    public AdminCommand(FakeItemCheckerPlugin plugin) {
         this.plugin = plugin;
     }
 

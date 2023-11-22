@@ -15,7 +15,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Optional;
 
-public final class FakeItemCheckerReloaded extends JavaPlugin {
+public final class FakeItemCheckerPlugin extends JavaPlugin {
     private Connection connection;
     @Getter
     private RuleRepository ruleRepository;

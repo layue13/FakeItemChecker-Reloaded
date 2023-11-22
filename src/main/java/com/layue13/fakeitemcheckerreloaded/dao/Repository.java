@@ -5,12 +5,14 @@ import java.util.Optional;
 
 /**
  * Dao interface
+ *
  * @param <T>  represent loaded data type.
  * @param <ID> represent ID type.
  */
 
-public interface Repository<T,ID> {
+public interface Repository<T, ID> {
     void init();
+
     Optional<T> get(ID id);
 
     Collection<T> getAll();

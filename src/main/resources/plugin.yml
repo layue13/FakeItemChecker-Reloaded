@@ -1,7 +1,7 @@
 name: FakeItemChecker-Reloaded
 version: '${version}'
-main: com.layue13.fakeitemcheckerreloaded.FakeItemCheckerReloaded
-authors: ['Layue13','wshycaa']
+main: com.layue13.fakeitemcheckerreloaded.FakeItemCheckerPlugin
+authors: [ 'Layue13','wshycaa' ]
 commands:
   fic:
     usage: /fic

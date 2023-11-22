@@ -1,7 +1,7 @@
 package com.layue13.fakeitemcheckerreloaded.listener;
 
 import cc.bukkitPlugin.pds.events.PlayerDataLoadCompleteEvent;
-import com.layue13.fakeitemcheckerreloaded.FakeItemCheckerReloaded;
+import com.layue13.fakeitemcheckerreloaded.FakeItemCheckerPlugin;
 import com.layue13.fakeitemcheckerreloaded.ban.BanInfo;
 import com.layue13.fakeitemcheckerreloaded.checker.FakedItemChecker;
 import com.layue13.fakeitemcheckerreloaded.entity.Log;
@@ -18,12 +18,12 @@ import java.util.Date;
 import java.util.UUID;
 
 public class PlayerDataSQLListener implements Listener {
-    private final FakeItemCheckerReloaded plugin;
+    private final FakeItemCheckerPlugin plugin;
     private final FakedItemChecker checker;
     private final Collection<String> ignoredInventoryTitles;
 
 
-    public PlayerDataSQLListener(FakeItemCheckerReloaded plugin) {
+    public PlayerDataSQLListener(FakeItemCheckerPlugin plugin) {
         this.plugin = plugin;
         this.checker = new FakedItemChecker(plugin.getRuleRepository());
         ignoredInventoryTitles = plugin.getConfig().getStringList("ignored_inventory");
