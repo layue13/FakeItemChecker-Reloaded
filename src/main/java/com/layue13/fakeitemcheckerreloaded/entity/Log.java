@@ -2,6 +2,7 @@ package com.layue13.fakeitemcheckerreloaded.entity;
 
 import lombok.*;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.ItemStack;
 
 import java.sql.Time;
 import java.time.LocalDateTime;
@@ -22,4 +23,5 @@ public class Log {
     private String location;
     private String event;
     private InventoryType inventoryType;
+    private Rule rule;
 }

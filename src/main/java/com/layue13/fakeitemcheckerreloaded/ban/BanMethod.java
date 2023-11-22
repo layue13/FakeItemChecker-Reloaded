@@ -9,7 +9,6 @@ import org.bukkit.plugin.Plugin;
 
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.util.Date;
 import java.util.function.Consumer;
 
 public enum BanMethod {

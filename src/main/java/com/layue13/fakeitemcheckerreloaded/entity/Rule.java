@@ -9,6 +9,7 @@ import org.bukkit.permissions.Permission;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class Rule {
     private Long id;
     private String item;

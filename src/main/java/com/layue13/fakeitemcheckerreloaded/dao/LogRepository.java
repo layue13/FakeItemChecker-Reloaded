@@ -12,7 +12,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class LogRepository extends SimpleMysqlRepository<Log, UUID> {
-    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private final RuleRepository ruleRepository = new RuleRepository(connection);
 
     public LogRepository(Connection connection) {
         super(connection);
@@ -28,7 +29,8 @@ public class LogRepository extends SimpleMysqlRepository<Log, UUID> {
                     + "time           DATETIME,"
                     + "location       TEXT,"
                     + "event          TEXT,"
-                    + "inventory_type TEXT"
+                    + "inventory_type TEXT,"
+                    + "rule_id        INT REFERENCES rules(id)"
                     + ")";
             statement.execute(sql);
         } catch (SQLException e) {
@@ -67,7 +69,7 @@ public class LogRepository extends SimpleMysqlRepository<Log, UUID> {
     @Override
     public void save(Log log) {
         Preconditions.checkNotNull(log);
-        try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO logs(id,player_name,server,time,location,event,inventory_type) VALUES (?,?,?,?,?,?,?)")) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO logs(id,player_name,server,time,location,event,inventory_type,rule_id) VALUES (?,?,?,?,?,?,?,?)")) {
             preparedStatement.setString(1, log.getId().toString());
             preparedStatement.setString(2, log.getPlayerName());
             preparedStatement.setString(3, log.getServer());
@@ -75,6 +77,7 @@ public class LogRepository extends SimpleMysqlRepository<Log, UUID> {
             preparedStatement.setString(5, log.getLocation());
             preparedStatement.setString(6, log.getEvent());
             preparedStatement.setString(7, log.getInventoryType().toString());
+            preparedStatement.setLong(8, log.getRule().getId());
             preparedStatement.execute();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -104,6 +107,7 @@ public class LogRepository extends SimpleMysqlRepository<Log, UUID> {
                     .inventoryType(InventoryType.valueOf(resultSet.getString("inventory_type")))
                     .location(resultSet.getString("location"))
                     .event(resultSet.getString("event"))
+                    .rule(ruleRepository.get(resultSet.getLong("rule_id")).get())
                     .build();
         } catch (SQLException e) {
             throw new RuntimeException(e);
