@@ -28,10 +28,15 @@ public class AdminCommand implements CommandExecutor {
         if (!label.equalsIgnoreCase("fic")) {
             return false;
         }
-        switch (Optional.of(args[0]).orElse("default").toLowerCase()) {
+        if (args.length == 0) {
+            Arrays.asList(ChatColor.translateAlternateColorCodes('&', "&e/fic reload"), ChatColor.translateAlternateColorCodes('&', "&e/fic add")).forEach(sender::sendMessage);
+            return true;
+        }
+        switch (args[0].toLowerCase()) {
             case "reload":
-                Bukkit.getServer().getPluginManager().disablePlugin(this.plugin);
-                Bukkit.getServer().getPluginManager().enablePlugin(this.plugin);
+                this.plugin.getServer().getPluginManager().disablePlugin(this.plugin);
+                this.plugin.getServer().getPluginManager().enablePlugin(this.plugin);
+                sender.sendMessage(this.plugin.getName() + " has been reloaded, please check your console if throws exception.");
                 break;
             case "add":
                 if (!sender.isOp()) {
@@ -48,8 +53,9 @@ public class AdminCommand implements CommandExecutor {
                     sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou can't add AIR!"));
                     return false;
                 }
-                this.plugin.getRuleRepository().save(Rule.builder().item(itemInHand.getType().toString() + ":" + itemInHand.getDurability()).permission(new Permission(args[1])).build());
-                sender.sendMessage("Saved");
+                Rule rule = Rule.builder().item(itemInHand.getType().toString() + ":" + itemInHand.getDurability()).permission(new Permission(args[1])).build();
+                this.plugin.getRuleRepository().save(rule);
+                sender.sendMessage(String.format("Saved %s to repository.", rule.toString()));
                 break;
             default:
                 Arrays.asList(ChatColor.translateAlternateColorCodes('&', "&e/fic reload"), ChatColor.translateAlternateColorCodes('&', "&e/fic add")).forEach(sender::sendMessage);
