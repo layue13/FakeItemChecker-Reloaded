@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
-public class LogRepository extends SimpleMysqlRepository<Log,UUID> {
+public class LogRepository extends SimpleMysqlRepository<Log, UUID> {
 
     public LogRepository(Connection connection) {
         super(connection);
@@ -39,6 +39,7 @@ public class LogRepository extends SimpleMysqlRepository<Log,UUID> {
         try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM logs WHERE id=?")) {
             preparedStatement.setString(1, id.toString());
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (!resultSet.next()) return Optional.empty();
                 return Optional.of(assembleLogFromResultSet(resultSet));
             }
         } catch (SQLException e) {
@@ -51,9 +52,9 @@ public class LogRepository extends SimpleMysqlRepository<Log,UUID> {
         Collection<Log> collection = new ArrayList<>();
         try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM logs")) {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                do {
+                while (resultSet.next()) {
                     collection.add(assembleLogFromResultSet(resultSet));
-                } while (resultSet.next());
+                }
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -85,7 +86,7 @@ public class LogRepository extends SimpleMysqlRepository<Log,UUID> {
     @Override
     public void delete(Log log) {
         try {
-            connection.prepareStatement("DELETE * FROM logs WHERE id=?", new String[]{String.valueOf(log.getId())}).execute();
+            connection.prepareStatement("DELETE FROM logs WHERE id=?", new String[]{String.valueOf(log.getId())}).execute();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

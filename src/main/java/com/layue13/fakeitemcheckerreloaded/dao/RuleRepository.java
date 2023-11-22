@@ -33,6 +33,7 @@ public class RuleRepository extends SimpleMysqlRepository<Rule, Long> {
         try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM rules WHERE id=?")) {
             preparedStatement.setLong(1, id);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (!resultSet.next()) return Optional.empty();
                 return Optional.of(assembleRuleFromResultSet(resultSet));
             }
         } catch (SQLException e) {
@@ -45,9 +46,9 @@ public class RuleRepository extends SimpleMysqlRepository<Rule, Long> {
         Collection<Rule> collection = new ArrayList<>();
         try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM rules")) {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                do {
+                while (resultSet.next()) {
                     collection.add(assembleRuleFromResultSet(resultSet));
-                } while (resultSet.next());
+                }
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
