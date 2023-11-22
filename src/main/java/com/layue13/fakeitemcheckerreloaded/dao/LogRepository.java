@@ -5,12 +5,14 @@ import com.layue13.fakeitemcheckerreloaded.entity.Log;
 import org.bukkit.event.inventory.InventoryType;
 
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
 public class LogRepository extends SimpleMysqlRepository<Log, UUID> {
+    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public LogRepository(Connection connection) {
         super(connection);
@@ -69,10 +71,11 @@ public class LogRepository extends SimpleMysqlRepository<Log, UUID> {
             preparedStatement.setString(1, log.getId().toString());
             preparedStatement.setString(2, log.getPlayerName());
             preparedStatement.setString(3, log.getServer());
-            preparedStatement.setString(4, log.getTime().toString());
+            preparedStatement.setString(4, dateFormat.format(log.getTime()));
             preparedStatement.setString(5, log.getLocation());
             preparedStatement.setString(6, log.getEvent());
             preparedStatement.setString(7, log.getInventoryType().toString());
+            preparedStatement.execute();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -94,7 +97,14 @@ public class LogRepository extends SimpleMysqlRepository<Log, UUID> {
 
     private Log assembleLogFromResultSet(ResultSet resultSet) {
         try {
-            return Log.builder().id(UUID.fromString(resultSet.getString("id"))).server(resultSet.getString("server")).time(resultSet.getDate("time")).inventoryType(InventoryType.valueOf(resultSet.getString("inventory_type"))).location(resultSet.getString("location")).event(resultSet.getString("event")).build();
+            return Log.builder()
+                    .id(UUID.fromString(resultSet.getString("id")))
+                    .server(resultSet.getString("server"))
+                    .time(resultSet.getDate("time"))
+                    .inventoryType(InventoryType.valueOf(resultSet.getString("inventory_type")))
+                    .location(resultSet.getString("location"))
+                    .event(resultSet.getString("event"))
+                    .build();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
