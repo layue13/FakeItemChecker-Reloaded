@@ -2,6 +2,8 @@ package com.layue13.fakeitemcheckerreloaded.checker;
 
 import com.google.common.base.Preconditions;
 import com.layue13.fakeitemcheckerreloaded.FakeItemCheckerReloaded;
+import com.layue13.fakeitemcheckerreloaded.ban.BanInfo;
+import com.layue13.fakeitemcheckerreloaded.ban.BanMethod;
 import com.layue13.fakeitemcheckerreloaded.dao.Repository;
 import com.layue13.fakeitemcheckerreloaded.entity.Log;
 import com.layue13.fakeitemcheckerreloaded.entity.Rule;
@@ -53,7 +55,7 @@ public class FakedItemChecker {
                         .id(UUID.randomUUID())
                         .playerName(player.getName())
                         .time(new Date())
-                        .server(Bukkit.getServer().getServerName())
+                        .server(Bukkit.getServer().getServerId())
                         .location(player.getLocation().toString())
                         .event(event.getEventName())
                         .inventoryType(inventory.getType())
@@ -61,7 +63,13 @@ public class FakedItemChecker {
                 plugin.getLogRepository().save(log);
                 plugin.getLogger().info(log.toString());
                 Bukkit.getScheduler().runTask(plugin, () -> {
-                    player.setBanned(true);
+                    BanMethod.BUKKIT_BAN.ban(BanInfo.builder()
+                            .player(player)
+                            .reason(log.toString())
+                            .server(plugin.getServer().getServerName())
+                            .source(plugin.getName())
+                            .build());
+                    player.kickPlayer("You got banned.");
                 });
                 return null;
             });
