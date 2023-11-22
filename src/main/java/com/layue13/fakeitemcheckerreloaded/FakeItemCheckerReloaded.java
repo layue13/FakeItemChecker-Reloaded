@@ -1,5 +1,6 @@
 package com.layue13.fakeitemcheckerreloaded;
 
+import com.layue13.fakeitemcheckerreloaded.ban.BanMethod;
 import com.layue13.fakeitemcheckerreloaded.command.AdminCommand;
 import com.layue13.fakeitemcheckerreloaded.dao.LogRepository;
 import com.layue13.fakeitemcheckerreloaded.dao.RuleRepository;
@@ -12,6 +13,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Optional;
 
 public final class FakeItemCheckerReloaded extends JavaPlugin {
     private Connection connection;
@@ -19,6 +21,8 @@ public final class FakeItemCheckerReloaded extends JavaPlugin {
     private RuleRepository ruleRepository;
     @Getter
     private LogRepository logRepository;
+    @Getter
+    private BanMethod banMethod;
 
     @Override
     public void onEnable() {
@@ -33,6 +37,9 @@ public final class FakeItemCheckerReloaded extends JavaPlugin {
             this.getServer().shutdown();
             throw new RuntimeException(e);
         }
+
+        banMethod = Optional.of(BanMethod.valueOf(getConfig().getString("ban_mode")))
+                .orElse(BanMethod.BUKKIT_BAN);
 
         ruleRepository = new RuleRepository(connection);
         logRepository = new LogRepository(connection);
