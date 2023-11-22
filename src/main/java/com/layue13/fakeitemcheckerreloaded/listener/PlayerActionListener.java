@@ -43,31 +43,29 @@ public class PlayerActionListener implements Listener {
             return;
         }
         ItemStack[] itemStacks = inventory.getContents().clone();
-        this.plugin.getServer().getScheduler().runTaskAsynchronously(this.plugin, () -> {
-            checker.check((Player) event.getPlayer(), itemStacks, (player, rule) -> {
-                Log log = Log.builder()
-                        .id(UUID.randomUUID())
-                        .playerName(player.getName())
-                        .time(new Date())
-                        .server(this.plugin.getServer().getServerId())
-                        .location(player.getLocation().toString())
-                        .event(event.getEventName())
-                        .inventoryType(inventory.getType())
-                        .rule(rule)
-                        .build();
-                plugin.getLogRepository().save(log);
-                plugin.getLogger().info(log.toString());
-                BanInfo banInfo = BanInfo.builder()
-                        .player(player)
-                        .reason(log.toString())
-                        .server(plugin.getServer().getServerName())
-                        .source(plugin.getName())
-                        .build();
-                this.plugin.getServer().getScheduler().runTask(this.plugin, () -> {
-                    BanMethod.BUKKIT_BAN.ban(banInfo);
-                    player.kickPlayer(banInfo.toString());
-                });
+        this.plugin.getServer().getScheduler().runTaskAsynchronously(this.plugin, () -> checker.check((Player) event.getPlayer(), itemStacks, (player, rule) -> {
+            Log log = Log.builder()
+                    .id(UUID.randomUUID())
+                    .playerName(player.getName())
+                    .time(new Date())
+                    .server(this.plugin.getServer().getServerId())
+                    .location(player.getLocation().toString())
+                    .event(event.getEventName())
+                    .inventoryType(inventory.getType())
+                    .rule(rule)
+                    .build();
+            plugin.getLogRepository().save(log);
+            plugin.getLogger().info(log.toString());
+            BanInfo banInfo = BanInfo.builder()
+                    .player(player)
+                    .reason(log.toString())
+                    .server(plugin.getServer().getServerName())
+                    .source(plugin.getName())
+                    .build();
+            this.plugin.getServer().getScheduler().runTask(this.plugin, () -> {
+                BanMethod.BUKKIT_BAN.ban(banInfo);
+                player.kickPlayer(banInfo.toString());
             });
-        });
+        }));
     }
 }

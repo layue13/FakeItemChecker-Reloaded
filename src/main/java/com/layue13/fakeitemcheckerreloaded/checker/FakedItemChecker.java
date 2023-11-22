@@ -37,8 +37,6 @@ public class FakedItemChecker {
         Arrays.stream(itemStacks)
                 .filter(Objects::nonNull)
                 .filter(itemStack -> !itemStack.getType().equals(Material.AIR))
-                .forEach(itemStack -> {
-                    check(holder, itemStack, doAfterIfError);
-                });
+                .forEach(itemStack -> check(holder, itemStack, doAfterIfError));
     }
 }
