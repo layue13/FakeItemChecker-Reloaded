@@ -28,13 +28,7 @@ public class AdminCommand implements CommandExecutor {
         if (!label.equalsIgnoreCase("fic")) {
             return false;
         }
-        if (!(sender instanceof Player)) {
-            sender.sendMessage("You should send the command as player.");
-            return false;
-        }
-
-        Player player = (Player) sender;
-        switch (Optional.of(args[0]).orElse("").toLowerCase()) {
+        switch (Optional.of(args[0]).orElse("default").toLowerCase()) {
             case "reload":
                 Bukkit.getServer().getPluginManager().disablePlugin(this.plugin);
                 Bukkit.getServer().getPluginManager().enablePlugin(this.plugin);
@@ -44,6 +38,11 @@ public class AdminCommand implements CommandExecutor {
                     sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou don't have permission!"));
                     return false;
                 }
+                if (!(sender instanceof Player)) {
+                    sender.sendMessage("You should send the command as player.");
+                    return false;
+                }
+                Player player = (Player) sender;
                 ItemStack itemInHand = player.getItemInHand();
                 if (itemInHand.getType().equals(Material.AIR)) {
                     sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou can't add AIR!"));

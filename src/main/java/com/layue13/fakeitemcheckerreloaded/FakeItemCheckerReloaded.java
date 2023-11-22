@@ -46,7 +46,7 @@ public final class FakeItemCheckerReloaded extends JavaPlugin {
         ruleRepository.init();
         logRepository.init();
 
-        Optional.of(this.getServer().getPluginManager().getPlugin("PlayerDataSQL")).ifPresent(plugin -> {
+        Optional.ofNullable(this.getServer().getPluginManager().getPlugin("PlayerDataSQL")).ifPresent(plugin -> {
             this.getLogger().info("Hook to the plugin: " + plugin.getName() + " Version:" + plugin.getDescription().getVersion());
             this.getServer().getPluginManager().registerEvents(new PlayerDataSQLListener(this), this);
         });
