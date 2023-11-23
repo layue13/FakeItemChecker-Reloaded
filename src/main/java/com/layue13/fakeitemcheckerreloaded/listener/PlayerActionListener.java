@@ -40,7 +40,9 @@ public class PlayerActionListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerPickupItemEvent(PlayerPickupItemEvent event) {
         Player player = event.getPlayer();
-        checkInventory(player, event, player.getInventory());
+        this.plugin.getServer().getScheduler().runTaskLaterAsynchronously(this.plugin, () -> {
+            checkInventory(player, event, player.getInventory());
+        }, 1L);
     }
 
     public void checkInventory(Player player, Event event, Inventory inventory) {
@@ -54,7 +56,7 @@ public class PlayerActionListener implements Listener {
                     .id(UUID.randomUUID())
                     .playerName(p.getName())
                     .time(new Date())
-                    .server(this.plugin.getServer().getServerId())
+                    .server(this.plugin.getServer().getServerName())
                     .location(p.getLocation().toString())
                     .event(eventName)
                     .inventoryType(inventory.getType())
@@ -64,9 +66,10 @@ public class PlayerActionListener implements Listener {
             plugin.getLogger().info(log.toString());
             BanInfo banInfo = BanInfo.builder()
                     .player(p)
-                    .reason(log.toString())
+                    .reason("You got baned.")
                     .server(plugin.getServer().getServerName())
                     .source(plugin.getName())
+                    .plugin(plugin)
                     .build();
             this.plugin.getServer().getScheduler().runTask(this.plugin, () -> {
                 this.plugin.getBanMethod().ban(banInfo);

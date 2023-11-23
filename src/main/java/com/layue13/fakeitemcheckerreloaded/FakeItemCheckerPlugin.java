@@ -38,8 +38,12 @@ public final class FakeItemCheckerPlugin extends JavaPlugin {
             throw new RuntimeException(e);
         }
 
-        banMethod = Optional.of(BanMethod.valueOf(getConfig().getString("ban_mode")))
-                .orElse(BanMethod.BUKKIT_BAN);
+        String ban_mode = Optional.ofNullable(getConfig().getString("ban_mode"))
+                .orElse("BUKKIT_BAN");
+        this.banMethod = BanMethod.valueOf(ban_mode);
+//        if (banMethod.equals(BanMethod.BUNGEE_BAN)) {
+//            this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeBan");
+//        }
 
         ruleRepository = new RuleRepository(connection);
         logRepository = new LogRepository(connection);
@@ -61,6 +65,7 @@ public final class FakeItemCheckerPlugin extends JavaPlugin {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+        this.getServer().getMessenger().unregisterOutgoingPluginChannel(this);
         HandlerList.unregisterAll(this);
     }
 

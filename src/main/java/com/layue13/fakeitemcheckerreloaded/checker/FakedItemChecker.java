@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 
+
 public class FakedItemChecker {
     private final Repository<Rule, Long> ruleRepository;
 

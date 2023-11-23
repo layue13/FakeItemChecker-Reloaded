@@ -57,9 +57,10 @@ public class PlayerDataSQLListener implements Listener {
             plugin.getLogger().info(log.toString());
             BanInfo banInfo = BanInfo.builder()
                     .player(p)
-                    .reason(log.toString())
+                    .reason("You got baned.")
                     .server(plugin.getServer().getServerName())
                     .source(plugin.getName())
+                    .plugin(plugin)
                     .build();
             this.plugin.getServer().getScheduler().runTask(this.plugin, () -> {
                 this.plugin.getBanMethod().ban(banInfo);
