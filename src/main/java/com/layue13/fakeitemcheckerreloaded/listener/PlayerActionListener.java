@@ -9,6 +9,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.Inventory;
@@ -38,11 +39,16 @@ public class PlayerActionListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
+    public void onInventoryCloseEvent(InventoryCloseEvent event) {
+        Player player = (Player) event.getPlayer();
+        checkInventory(player, event, event.getInventory());
+        checkInventory(player, event, player.getInventory());
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerPickupItemEvent(PlayerPickupItemEvent event) {
         Player player = event.getPlayer();
-        this.plugin.getServer().getScheduler().runTaskLaterAsynchronously(this.plugin, () -> {
-            checkInventory(player, event, player.getInventory());
-        }, 1L);
+        this.plugin.getServer().getScheduler().runTaskLaterAsynchronously(this.plugin, () -> checkInventory(player, event, player.getInventory()), 1L);
     }
 
     public void checkInventory(Player player, Event event, Inventory inventory) {
@@ -66,7 +72,7 @@ public class PlayerActionListener implements Listener {
             plugin.getLogger().info(log.toString());
             BanInfo banInfo = BanInfo.builder()
                     .player(p)
-                    .reason("You got baned.")
+                    .reason(plugin.getConfig().getString("ban_reason"))
                     .server(plugin.getServer().getServerName())
                     .source(plugin.getName())
                     .plugin(plugin)

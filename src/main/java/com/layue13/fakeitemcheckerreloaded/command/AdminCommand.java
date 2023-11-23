@@ -51,12 +51,12 @@ public class AdminCommand implements CommandExecutor {
                     sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou can't add AIR!"));
                     return false;
                 }
-                Rule rule = Rule.builder().item(itemInHand.getType().toString() + ":" + itemInHand.getDurability()).permission(new Permission(args[1])).build();
+                Rule rule = Rule.builder().item(itemInHand.getType().toString() + ":" + itemInHand.getDurability() + ":" + args[1]).permission(new Permission(args[2])).build();
                 this.plugin.getRuleRepository().save(rule);
                 sender.sendMessage(String.format("Saved %s to repository.", rule.toString()));
                 break;
             default:
-                Arrays.asList(ChatColor.translateAlternateColorCodes('&', "&e/fic reload"), ChatColor.translateAlternateColorCodes('&', "&e/fic add")).forEach(sender::sendMessage);
+                Arrays.asList(ChatColor.translateAlternateColorCodes('&', "&e/fic reload"), ChatColor.translateAlternateColorCodes('&', "&e/fic add <amount> <permission>")).forEach(sender::sendMessage);
                 break;
         }
         return true;

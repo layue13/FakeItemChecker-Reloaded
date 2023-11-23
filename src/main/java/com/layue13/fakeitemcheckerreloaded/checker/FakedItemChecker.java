@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 
 public class FakedItemChecker {
@@ -25,19 +26,28 @@ public class FakedItemChecker {
         Preconditions.checkNotNull(itemStack);
         Preconditions.checkNotNull(doAfterIfError);
         ruleRepository.getAll().forEach(rule -> {
-            if (!holder.hasPermission(rule.getPermission())) {
-                String item = itemStack.getType().name() + ":" + itemStack.getDurability();
-                if (rule.getItem().equals(item)) {
-                    doAfterIfError.accept(holder, rule);
-                }
+            if (holder.hasPermission(rule.getPermission())) {
+                return;
             }
+            String[] split = rule.getItem().split(":");
+            if (!itemStack.getType().name().equals(split[0])) {
+                return;
+            }
+            if (!split[1].equals(String.valueOf(itemStack.getDurability()))) {
+                return;
+            }
+            if (itemStack.getAmount() < Integer.parseInt(split[2])) {
+                return;
+            }
+            doAfterIfError.accept(holder, rule);
         });
     }
 
     public void check(Player holder, ItemStack[] itemStacks, BiConsumer<Player, Rule> doAfterIfError) {
-        Arrays.stream(itemStacks)
-                .filter(Objects::nonNull)
-                .filter(itemStack -> !itemStack.getType().equals(Material.AIR))
+        Arrays.stream(itemStacks).filter(Objects::nonNull).filter(itemStack -> !itemStack.getType().equals(Material.AIR)).collect(Collectors.toMap(ItemStack::getType, itemStack -> itemStack, (o1, o2) -> {
+                    o1.setAmount(o2.getAmount());
+                    return o1;
+                })).values()
                 .forEach(itemStack -> check(holder, itemStack, doAfterIfError));
     }
 }

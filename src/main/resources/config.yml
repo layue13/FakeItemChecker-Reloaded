@@ -9,3 +9,4 @@ ignored_inventory:
 # BUNGEE_BAN needs the plugin called "BungeeBan", can be downloaded in following url
 # https://www.spigotmc.org/resources/bungeeban.8/
 ban_mode: "BUKKIT_BAN"
+ban_reason: "你被ban了"

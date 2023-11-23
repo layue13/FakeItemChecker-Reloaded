@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.layue13"
-version = "1.0.0"
+version = "1.0.1"
 
 repositories {
     mavenCentral()
@@ -39,9 +39,9 @@ java {
 }
 
 tasks.withType<ProcessResources> {
-    val props = mapOf("version" to version);
+    val props = mapOf("version" to version)
     inputs.properties(props)
-    filteringCharset = Charsets.UTF_8.name();
+    filteringCharset = Charsets.UTF_8.name()
     filesMatching("*.yml") {
         expand(props)
     }

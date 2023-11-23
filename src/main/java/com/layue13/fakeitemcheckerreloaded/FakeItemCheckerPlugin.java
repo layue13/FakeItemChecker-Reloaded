@@ -38,9 +38,7 @@ public final class FakeItemCheckerPlugin extends JavaPlugin {
             throw new RuntimeException(e);
         }
 
-        String ban_mode = Optional.ofNullable(getConfig().getString("ban_mode"))
-                .orElse("BUKKIT_BAN");
-        this.banMethod = BanMethod.valueOf(ban_mode);
+        this.banMethod = BanMethod.BUKKIT_BAN;
 //        if (banMethod.equals(BanMethod.BUNGEE_BAN)) {
 //            this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeBan");
 //        }
