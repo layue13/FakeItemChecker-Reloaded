@@ -45,7 +45,7 @@ public class FakedItemChecker {
 
     public void check(Player holder, ItemStack[] itemStacks, BiConsumer<Player, Rule> doAfterIfError) {
         Arrays.stream(itemStacks).filter(Objects::nonNull).filter(itemStack -> !itemStack.getType().equals(Material.AIR)).collect(Collectors.toMap(ItemStack::getType, itemStack -> itemStack, (o1, o2) -> {
-                    o1.setAmount(o2.getAmount());
+                    o1.setAmount(o1.getAmount() + o2.getAmount());
                     return o1;
                 })).values()
                 .forEach(itemStack -> check(holder, itemStack, doAfterIfError));
