@@ -4,6 +4,7 @@ import com.layue13.fakeitemcheckerreloaded.ban.BanMethod;
 import com.layue13.fakeitemcheckerreloaded.command.AdminCommand;
 import com.layue13.fakeitemcheckerreloaded.dao.CachedRuleRepository;
 import com.layue13.fakeitemcheckerreloaded.dao.LogRepository;
+import com.layue13.fakeitemcheckerreloaded.dao.RuleRepository;
 import com.layue13.fakeitemcheckerreloaded.listener.PlayerActionListener;
 import com.layue13.fakeitemcheckerreloaded.listener.PlayerDataSQLListener;
 import lombok.Getter;
@@ -18,7 +19,7 @@ import java.util.Optional;
 public final class FakeItemCheckerPlugin extends JavaPlugin {
     private Connection connection;
     @Getter
-    private CachedRuleRepository ruleRepository;
+    private RuleRepository ruleRepository;
     @Getter
     private LogRepository logRepository;
     @Getter

@@ -6,14 +6,15 @@ import org.bukkit.plugin.Plugin;
 import java.sql.Connection;
 import java.util.Collection;
 import java.util.Date;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class CachedRuleRepository extends RuleRepository {
 
     private final Plugin plugin;
-    private final Collection<Rule> cachedRules = new CopyOnWriteArrayList<>();
-
+    private final Lock lock = new ReentrantLock();
     private final Date freshDataTime = new Date();
+    private Collection<Rule> cachedRules;
 
     public CachedRuleRepository(Connection connection, Plugin plugin) {
         super(connection);
@@ -23,19 +24,21 @@ public class CachedRuleRepository extends RuleRepository {
 
     @Override
     public Collection<Rule> getAll() {
-        if (cachedRules.isEmpty() || freshDataTime.before(new Date())) {
-            plugin.getServer().getScheduler().runTaskLaterAsynchronously(this.plugin, () -> {
-                fresh();
-                freshDataTime.setTime(System.currentTimeMillis() + 60 * 1000);
-                plugin.getLogger().info("The following rules has been cached.");
-                cachedRules.forEach(rule -> plugin.getLogger().info(rule.toString()));
-            }, 1L);
+        if (cachedRules == null || cachedRules.isEmpty() || freshDataTime.before(new Date())) {
+            plugin.getServer().getScheduler().runTaskAsynchronously(this.plugin, () -> {
+                lock.lock();
+                if (cachedRules == null || cachedRules.isEmpty() || freshDataTime.before(new Date())) {
+                    fresh();
+                    freshDataTime.setTime(System.currentTimeMillis() + 120 * 1000);
+                }
+                lock.unlock();
+            });
         }
         return cachedRules;
     }
 
     public void fresh() {
-        cachedRules.clear();
-        cachedRules.addAll(super.getAll());
+        cachedRules = null;
+        this.cachedRules = super.getAll();
     }
 }

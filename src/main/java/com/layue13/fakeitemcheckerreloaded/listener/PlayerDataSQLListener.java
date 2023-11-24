@@ -53,8 +53,6 @@ public class PlayerDataSQLListener implements Listener {
                     .inventoryType(inventory.getType())
                     .rule(rule)
                     .build();
-            plugin.getLogRepository().save(log);
-            plugin.getLogger().info(log.toString());
             BanInfo banInfo = BanInfo.builder()
                     .player(p)
                     .reason(plugin.getConfig().getString("ban_reason"))
@@ -65,6 +63,8 @@ public class PlayerDataSQLListener implements Listener {
             this.plugin.getServer().getScheduler().runTask(this.plugin, () -> {
                 this.plugin.getBanMethod().ban(banInfo);
                 p.kickPlayer(banInfo.toString());
+                plugin.getLogRepository().save(log);
+                plugin.getLogger().info(log.toString());
             });
         }));
     }

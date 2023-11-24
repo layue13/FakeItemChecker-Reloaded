@@ -34,8 +34,8 @@ public class PlayerActionListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onInventoryOpenEvent(InventoryOpenEvent event) {
         Player player = (Player) event.getPlayer();
-        checkInventory(player, event, event.getInventory());
-        checkInventory(player, event, player.getInventory());
+        this.plugin.getServer().getScheduler().runTaskLaterAsynchronously(this.plugin, () -> checkInventory(player, event, player.getInventory()), 1L);
+        this.plugin.getServer().getScheduler().runTaskLaterAsynchronously(this.plugin, () -> checkInventory(player, event, event.getInventory()), 1L);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -55,9 +55,9 @@ public class PlayerActionListener implements Listener {
         if (this.ignoredInventoryTitles.contains(inventory.getTitle())) {
             return;
         }
-        ItemStack[] itemStacks = inventory.getContents().clone();
+        ItemStack[] itemStacks = inventory.getContents();
         String eventName = event.getEventName();
-        this.plugin.getServer().getScheduler().runTaskAsynchronously(this.plugin, () -> checker.check(player, itemStacks, (p, rule) -> {
+        checker.check(player, itemStacks, (p, rule) -> {
             Log log = Log.builder()
                     .id(UUID.randomUUID())
                     .playerName(p.getName())
@@ -68,8 +68,6 @@ public class PlayerActionListener implements Listener {
                     .inventoryType(inventory.getType())
                     .rule(rule)
                     .build();
-            plugin.getLogRepository().save(log);
-            plugin.getLogger().info(log.toString());
             BanInfo banInfo = BanInfo.builder()
                     .player(p)
                     .reason(plugin.getConfig().getString("ban_reason"))
@@ -78,9 +76,11 @@ public class PlayerActionListener implements Listener {
                     .plugin(plugin)
                     .build();
             this.plugin.getServer().getScheduler().runTask(this.plugin, () -> {
+                plugin.getLogRepository().save(log);
+                plugin.getLogger().info(log.toString());
                 this.plugin.getBanMethod().ban(banInfo);
                 p.kickPlayer(banInfo.toString());
             });
-        }));
+        });
     }
 }
