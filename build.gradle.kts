@@ -20,12 +20,17 @@ repositories {
         name = "jitpack"
         url = uri("https://jitpack.io")
     }
+    maven {
+        name = "code-mc"
+        url = uri("https://repo.codemc.io/repository/nms/")
+    }
 }
 
 dependencies {
     compileOnly(fileTree("libs") {
         include("*.jar")
     })
+    compileOnly("org.bukkit:bukkit:1.7.10-R0.1-SNAPSHOT")
 }
 
 val targetJavaVersion = 8
