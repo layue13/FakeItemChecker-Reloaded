@@ -2,8 +2,8 @@ package com.layue13.fakeitemcheckerreloaded;
 
 import com.layue13.fakeitemcheckerreloaded.ban.BanMethod;
 import com.layue13.fakeitemcheckerreloaded.command.AdminCommand;
+import com.layue13.fakeitemcheckerreloaded.dao.CachedRuleRepository;
 import com.layue13.fakeitemcheckerreloaded.dao.LogRepository;
-import com.layue13.fakeitemcheckerreloaded.dao.RuleRepository;
 import com.layue13.fakeitemcheckerreloaded.listener.PlayerActionListener;
 import com.layue13.fakeitemcheckerreloaded.listener.PlayerDataSQLListener;
 import lombok.Getter;
@@ -18,7 +18,7 @@ import java.util.Optional;
 public final class FakeItemCheckerPlugin extends JavaPlugin {
     private Connection connection;
     @Getter
-    private RuleRepository ruleRepository;
+    private CachedRuleRepository ruleRepository;
     @Getter
     private LogRepository logRepository;
     @Getter
@@ -43,7 +43,7 @@ public final class FakeItemCheckerPlugin extends JavaPlugin {
 //            this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeBan");
 //        }
 
-        ruleRepository = new RuleRepository(connection);
+        ruleRepository = new CachedRuleRepository(connection, this);
         logRepository = new LogRepository(connection);
         ruleRepository.init();
         logRepository.init();
