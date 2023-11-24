@@ -9,7 +9,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.permissions.Permission;
 
 import java.util.Arrays;
 
@@ -51,7 +50,7 @@ public class AdminCommand implements CommandExecutor {
                     sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou can't add AIR!"));
                     return false;
                 }
-                Rule rule = Rule.builder().item(itemInHand.getType().toString() + ":" + itemInHand.getDurability() + ":" + args[1]).permission(new Permission(args[2])).build();
+                Rule rule = Rule.builder().item(itemInHand.getType().toString() + ":" + itemInHand.getDurability() + ":" + args[1]).permission((args[2])).build();
                 this.plugin.getRuleRepository().save(rule);
                 sender.sendMessage(String.format("Saved %s to repository.", rule.toString()));
                 break;

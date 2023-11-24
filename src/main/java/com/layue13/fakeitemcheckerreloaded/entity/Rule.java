@@ -13,5 +13,5 @@ import org.bukkit.permissions.Permission;
 public class Rule {
     private Long id;
     private String item;
-    private Permission permission;
+    private String permission;
 }

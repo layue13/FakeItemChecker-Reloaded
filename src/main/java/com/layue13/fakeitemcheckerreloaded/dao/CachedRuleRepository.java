@@ -13,7 +13,7 @@ public class CachedRuleRepository extends RuleRepository {
     private final Plugin plugin;
     private final Collection<Rule> cachedRules = new CopyOnWriteArrayList<>();
 
-    private Date freshDataTime = new Date();
+    private final Date freshDataTime = new Date();
 
     public CachedRuleRepository(Connection connection, Plugin plugin) {
         super(connection);
@@ -23,18 +23,19 @@ public class CachedRuleRepository extends RuleRepository {
 
     @Override
     public Collection<Rule> getAll() {
-        fresh();
+        if (cachedRules.isEmpty() || freshDataTime.before(new Date())) {
+            plugin.getServer().getScheduler().runTaskLaterAsynchronously(this.plugin, () -> {
+                fresh();
+                freshDataTime.setTime(System.currentTimeMillis() + 60 * 1000);
+                plugin.getLogger().info("The following rules has been cached.");
+                cachedRules.forEach(rule -> plugin.getLogger().info(rule.toString()));
+            }, 1L);
+        }
         return cachedRules;
     }
 
     public void fresh() {
-        if (freshDataTime.before(new Date())) {
-            plugin.getServer().getScheduler().runTaskLaterAsynchronously(this.plugin, () -> {
-                cachedRules.clear();
-                cachedRules.addAll(super.getAll());
-                freshDataTime = new Date(System.currentTimeMillis() + 100000);
-                plugin.getLogger().info(CachedRuleRepository.class.getName() + " will be upgrading at " + freshDataTime.toString());
-            }, 1L);
-        }
+        cachedRules.clear();
+        cachedRules.addAll(super.getAll());
     }
 }

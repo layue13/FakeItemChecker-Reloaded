@@ -26,30 +26,27 @@ public class FakedItemChecker {
         Preconditions.checkNotNull(itemStack);
         Preconditions.checkNotNull(doAfterIfError);
         ruleRepository.getAll().forEach(rule -> {
-            if (holder.hasPermission(rule.getPermission())) {
-                return;
+            if (!holder.hasPermission(rule.getPermission()) || !holder.isOp()) {
+                String[] split = rule.getItem().split(":");
+                if (itemStack.getType().name().equals(split[0])) {
+                    if (split[1].equals(String.valueOf(itemStack.getDurability()))) {
+                        if (itemStack.getAmount() < Integer.parseInt(split[2])) {
+                            doAfterIfError.accept(holder, rule);
+                        }
+                    }
+                }
             }
-            String[] split = rule.getItem().split(":");
-            if (!itemStack.getType().name().equals(split[0])) {
-                return;
-            }
-            if (!split[1].equals(String.valueOf(itemStack.getDurability()))) {
-                return;
-            }
-            if (itemStack.getAmount() < Integer.parseInt(split[2])) {
-                return;
-            }
-            doAfterIfError.accept(holder, rule);
         });
     }
 
     public void check(Player holder, ItemStack[] itemStacks, BiConsumer<Player, Rule> doAfterIfError) {
         Arrays.stream(itemStacks).filter(Objects::nonNull).filter(itemStack -> !itemStack.getType().equals(Material.AIR))
                 .map(ItemStack::clone)
-                .collect(Collectors.toMap(ItemStack::getType, itemStack -> itemStack, (o1, o2) -> {
-                    o1.setAmount(o1.getAmount() + o2.getAmount());
-                    return o1;
-                })).values()
+                .collect(Collectors.toMap(itemStack -> itemStack.getType().name() + ":" + String.valueOf(itemStack.getDurability()),
+                        itemStack -> itemStack, (o1, o2) -> {
+                            o1.setAmount(o1.getAmount() + o2.getAmount());
+                            return o1;
+                        })).values()
                 .forEach(itemStack -> check(holder, itemStack, doAfterIfError));
     }
 }

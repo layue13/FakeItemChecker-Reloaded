@@ -2,7 +2,6 @@ package com.layue13.fakeitemcheckerreloaded.dao;
 
 import com.google.common.base.Preconditions;
 import com.layue13.fakeitemcheckerreloaded.entity.Rule;
-import org.bukkit.permissions.Permission;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -61,7 +60,7 @@ public class RuleRepository extends SimpleMysqlRepository<Rule, Long> {
         Preconditions.checkNotNull(rule);
         try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO rules(item,permission) VALUES (?,?)")) {
             preparedStatement.setString(1, rule.getItem());
-            preparedStatement.setString(2, rule.getPermission().getName());
+            preparedStatement.setString(2, rule.getPermission());
             preparedStatement.execute();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -89,7 +88,7 @@ public class RuleRepository extends SimpleMysqlRepository<Rule, Long> {
             return Rule.builder()
                     .id(resultSet.getLong("id"))
                     .item(resultSet.getString("item"))
-                    .permission(new Permission(resultSet.getString("permission")))
+                    .permission(resultSet.getString("permission"))
                     .build();
         } catch (SQLException e) {
             throw new RuntimeException(e);
