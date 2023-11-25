@@ -3,19 +3,23 @@ package com.layue13.fakeitemcheckerreloaded.dao;
 import com.google.common.base.Preconditions;
 import com.layue13.fakeitemcheckerreloaded.entity.Rule;
 
-import java.sql.*;
+import javax.sql.DataSource;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
 
-public class RuleRepository extends SimpleMysqlRepository<Rule, Long> {
-    public RuleRepository(Connection connection) {
-        super(connection);
+public class RuleRepository extends DataSourceBasedRepository<Rule, Long> {
+    public RuleRepository(DataSource dataSource) {
+        super(dataSource);
     }
 
     @Override
     public void init() {
-        try (Statement statement = this.connection.createStatement()) {
+        try (Statement statement = super.dataSource.getConnection().createStatement()) {
             String sql = "CREATE TABLE IF NOT EXISTS rules"
                     + "(id              INT PRIMARY KEY AUTO_INCREMENT,"
                     + "item             TEXT,"
@@ -29,7 +33,7 @@ public class RuleRepository extends SimpleMysqlRepository<Rule, Long> {
 
     @Override
     public Optional<Rule> get(Long id) {
-        try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM rules WHERE id=?")) {
+        try (PreparedStatement preparedStatement = super.dataSource.getConnection().prepareStatement("SELECT * FROM rules WHERE id=?")) {
             preparedStatement.setLong(1, id);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (!resultSet.next()) return Optional.empty();
@@ -43,7 +47,7 @@ public class RuleRepository extends SimpleMysqlRepository<Rule, Long> {
     @Override
     public Collection<Rule> getAll() {
         Collection<Rule> collection = new ArrayList<>();
-        try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM rules")) {
+        try (PreparedStatement preparedStatement = super.dataSource.getConnection().prepareStatement("SELECT * FROM rules")) {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     collection.add(assembleRuleFromResultSet(resultSet));
@@ -58,7 +62,7 @@ public class RuleRepository extends SimpleMysqlRepository<Rule, Long> {
     @Override
     public void save(Rule rule) {
         Preconditions.checkNotNull(rule);
-        try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO rules(item,permission) VALUES (?,?)")) {
+        try (PreparedStatement preparedStatement = super.dataSource.getConnection().prepareStatement("INSERT INTO rules(item,permission) VALUES (?,?)")) {
             preparedStatement.setString(1, rule.getItem());
             preparedStatement.setString(2, rule.getPermission());
             preparedStatement.execute();
@@ -75,7 +79,7 @@ public class RuleRepository extends SimpleMysqlRepository<Rule, Long> {
     @Override
     public void delete(Rule rule) {
         Preconditions.checkNotNull(rule);
-        try (PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM logs WHERE id=?")) {
+        try (PreparedStatement preparedStatement = super.dataSource.getConnection().prepareStatement("DELETE FROM logs WHERE id=?")) {
             preparedStatement.setLong(1, rule.getId());
             preparedStatement.execute();
         } catch (SQLException e) {

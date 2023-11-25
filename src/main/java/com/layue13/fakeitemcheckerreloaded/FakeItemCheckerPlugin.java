@@ -7,17 +7,17 @@ import com.layue13.fakeitemcheckerreloaded.dao.LogRepository;
 import com.layue13.fakeitemcheckerreloaded.dao.RuleRepository;
 import com.layue13.fakeitemcheckerreloaded.listener.PlayerActionListener;
 import com.layue13.fakeitemcheckerreloaded.listener.PlayerDataSQLListener;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import javax.sql.DataSource;
 import java.util.Optional;
 
 public final class FakeItemCheckerPlugin extends JavaPlugin {
-    private Connection connection;
+    private DataSource dataSource;
     @Getter
     private RuleRepository ruleRepository;
     @Getter
@@ -31,21 +31,20 @@ public final class FakeItemCheckerPlugin extends JavaPlugin {
         saveDefaultConfig();
         reloadConfig();
 
-        try {
-            connection = DriverManager.getConnection(getConfig().getString("db.url"), getConfig().getString("db.username"), getConfig().getString("db.password"));
-        } catch (SQLException e) {
-            this.getLogger().warning("Please confirm your database info is configured.");
-            this.getServer().shutdown();
-            throw new RuntimeException(e);
-        }
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl(getConfig().getString("db.url"));
+        config.setUsername(getConfig().getString("db.username"));
+        config.setPassword(getConfig().getString("db.password"));
+        this.dataSource = new HikariDataSource(config);
+
 
         this.banMethod = BanMethod.BUKKIT_BAN;
 //        if (banMethod.equals(BanMethod.BUNGEE_BAN)) {
 //            this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeBan");
 //        }
 
-        ruleRepository = new CachedRuleRepository(connection, this);
-        logRepository = new LogRepository(connection);
+        ruleRepository = new CachedRuleRepository(dataSource);
+        logRepository = new LogRepository(dataSource);
         ruleRepository.init();
         logRepository.init();
 
@@ -59,11 +58,7 @@ public final class FakeItemCheckerPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        try {
-            connection.close();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        ((HikariDataSource) this.dataSource).close();
         this.getServer().getMessenger().unregisterOutgoingPluginChannel(this);
         HandlerList.unregisterAll(this);
     }

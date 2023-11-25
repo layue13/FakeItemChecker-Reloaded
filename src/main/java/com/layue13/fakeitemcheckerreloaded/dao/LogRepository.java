@@ -4,24 +4,28 @@ import com.google.common.base.Preconditions;
 import com.layue13.fakeitemcheckerreloaded.entity.Log;
 import org.bukkit.event.inventory.InventoryType;
 
-import java.sql.*;
+import javax.sql.DataSource;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
-public class LogRepository extends SimpleMysqlRepository<Log, UUID> {
+public class LogRepository extends DataSourceBasedRepository<Log, UUID> {
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    private final RuleRepository ruleRepository = new RuleRepository(connection);
+    private final RuleRepository ruleRepository = new RuleRepository(dataSource);
 
-    public LogRepository(Connection connection) {
-        super(connection);
+    public LogRepository(DataSource dataSource) {
+        super(dataSource);
     }
 
     @Override
     public void init() {
-        try (Statement statement = connection.createStatement()) {
+        try (Statement statement = dataSource.getConnection().createStatement()) {
             String sql = "CREATE TABLE IF NOT EXISTS logs"
                     + "(id            VARCHAR(36) PRIMARY KEY,"
                     + "player_name    VARCHAR(16),"
@@ -40,7 +44,7 @@ public class LogRepository extends SimpleMysqlRepository<Log, UUID> {
 
     @Override
     public Optional<Log> get(UUID id) {
-        try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM logs WHERE id=?")) {
+        try (PreparedStatement preparedStatement = super.dataSource.getConnection().prepareStatement("SELECT * FROM logs WHERE id=?")) {
             preparedStatement.setString(1, id.toString());
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (!resultSet.next()) return Optional.empty();
@@ -54,7 +58,7 @@ public class LogRepository extends SimpleMysqlRepository<Log, UUID> {
     @Override
     public Collection<Log> getAll() {
         Collection<Log> collection = new ArrayList<>();
-        try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM logs")) {
+        try (PreparedStatement preparedStatement = super.dataSource.getConnection().prepareStatement("SELECT * FROM logs")) {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     collection.add(assembleLogFromResultSet(resultSet));
@@ -69,7 +73,7 @@ public class LogRepository extends SimpleMysqlRepository<Log, UUID> {
     @Override
     public void save(Log log) {
         Preconditions.checkNotNull(log);
-        try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO logs(id,player_name,server,time,location,event,inventory_type,rule_id) VALUES (?,?,?,?,?,?,?,?)")) {
+        try (PreparedStatement preparedStatement = super.dataSource.getConnection().prepareStatement("INSERT INTO logs(id,player_name,server,time,location,event,inventory_type,rule_id) VALUES (?,?,?,?,?,?,?,?)")) {
             preparedStatement.setString(1, log.getId().toString());
             preparedStatement.setString(2, log.getPlayerName());
             preparedStatement.setString(3, log.getServer());
@@ -91,8 +95,8 @@ public class LogRepository extends SimpleMysqlRepository<Log, UUID> {
 
     @Override
     public void delete(Log log) {
-        try {
-            connection.prepareStatement("DELETE FROM logs WHERE id=?", new String[]{String.valueOf(log.getId())}).execute();
+        try (PreparedStatement preparedStatement = super.dataSource.getConnection().prepareStatement("DELETE FROM logs WHERE id=?", new String[]{String.valueOf(log.getId())})) {
+            preparedStatement.execute();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

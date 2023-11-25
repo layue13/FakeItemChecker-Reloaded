@@ -1,10 +1,11 @@
 plugins {
     id("java")
     id("io.freefair.lombok") version "8.4"
+    id("com.github.johnrengelman.shadow") version("8.1.1")
 }
 
 group = "com.layue13"
-version = "1.0.2"
+version = "1.0.3"
 
 repositories {
     mavenCentral()
@@ -31,6 +32,7 @@ dependencies {
         include("*.jar")
     })
     compileOnly("org.bukkit:bukkit:1.7.10-R0.1-SNAPSHOT")
+    implementation("com.zaxxer:HikariCP:4.0.3")
 }
 
 val targetJavaVersion = 8
