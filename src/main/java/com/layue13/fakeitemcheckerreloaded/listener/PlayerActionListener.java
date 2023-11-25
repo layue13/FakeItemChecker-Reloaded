@@ -41,8 +41,10 @@ public class PlayerActionListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onInventoryCloseEvent(InventoryCloseEvent event) {
         Player player = (Player) event.getPlayer();
-        checkInventory(player, event, event.getInventory());
-        checkInventory(player, event, player.getInventory());
+        if (player.isOnline()) {
+            this.plugin.getServer().getScheduler().runTaskLaterAsynchronously(this.plugin, () -> checkInventory(player, event, player.getInventory()), 1L);
+            this.plugin.getServer().getScheduler().runTaskLaterAsynchronously(this.plugin, () -> checkInventory(player, event, event.getInventory()), 1L);
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -52,6 +54,9 @@ public class PlayerActionListener implements Listener {
     }
 
     public void checkInventory(Player player, Event event, Inventory inventory) {
+        if (!player.isOnline()) {
+            return;
+        }
         if (this.ignoredInventoryTitles.contains(inventory.getTitle())) {
             return;
         }

@@ -5,11 +5,13 @@ import com.layue13.fakeitemcheckerreloaded.entity.Rule;
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Date;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 public class CachedRuleRepository extends RuleRepository {
 
     private final Date freshDataTime = new Date();
-    private Collection<Rule> cachedRules;
+    private Collection<Rule> cachedRules = new CopyOnWriteArrayList<>();
 
     public CachedRuleRepository(DataSource dataSource) {
         super(dataSource);
@@ -26,7 +28,10 @@ public class CachedRuleRepository extends RuleRepository {
     }
 
     public void fresh() {
-        cachedRules = null;
-        this.cachedRules = super.getAll();
+        Collection<Rule> rulesInDatabase = super.getAll();
+        cachedRules.addAll(rulesInDatabase);
+        this.cachedRules = cachedRules.stream()
+                .distinct()
+                .collect(Collectors.toList());
     }
 }

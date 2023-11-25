@@ -38,10 +38,11 @@ public final class FakeItemCheckerPlugin extends JavaPlugin {
         this.dataSource = new HikariDataSource(config);
 
 
-        this.banMethod = BanMethod.BUKKIT_BAN;
-//        if (banMethod.equals(BanMethod.BUNGEE_BAN)) {
-//            this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeBan");
-//        }
+        Optional<BanMethod> optionalBanMethod = Optional.of(BanMethod.valueOf(this.getConfig().getString("ban_mode")));
+        banMethod = optionalBanMethod.orElse(BanMethod.BUKKIT_BAN);
+        if (banMethod.equals(BanMethod.BUNGEE_BAN)) {
+            this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeBan");
+        }
 
         ruleRepository = new CachedRuleRepository(dataSource);
         logRepository = new LogRepository(dataSource);

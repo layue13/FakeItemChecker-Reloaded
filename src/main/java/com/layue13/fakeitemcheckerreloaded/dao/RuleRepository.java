@@ -4,10 +4,7 @@ import com.google.common.base.Preconditions;
 import com.layue13.fakeitemcheckerreloaded.entity.Rule;
 
 import javax.sql.DataSource;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
@@ -19,25 +16,14 @@ public class RuleRepository extends DataSourceBasedRepository<Rule, Long> {
 
     @Override
     public void init() {
-        try (Statement statement = super.dataSource.getConnection().createStatement()) {
-            String sql = "CREATE TABLE IF NOT EXISTS rules"
-                    + "(id              INT PRIMARY KEY AUTO_INCREMENT,"
-                    + "item             TEXT,"
-                    + "permission       TEXT"
-                    + ")";
-            statement.execute(sql);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public Optional<Rule> get(Long id) {
-        try (PreparedStatement preparedStatement = super.dataSource.getConnection().prepareStatement("SELECT * FROM rules WHERE id=?")) {
-            preparedStatement.setLong(1, id);
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (!resultSet.next()) return Optional.empty();
-                return Optional.of(assembleRuleFromResultSet(resultSet));
+        try (Connection connection = super.dataSource.getConnection()) {
+            try (Statement statement = connection.createStatement()) {
+                String sql = "CREATE TABLE IF NOT EXISTS rules"
+                        + "(id              INT PRIMARY KEY AUTO_INCREMENT,"
+                        + "item             TEXT,"
+                        + "permission       TEXT"
+                        + ")";
+                statement.execute(sql);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -45,12 +31,30 @@ public class RuleRepository extends DataSourceBasedRepository<Rule, Long> {
     }
 
     @Override
+    public Optional<Rule> get(Long id) {
+        try (Connection connection = super.dataSource.getConnection()) {
+            try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM rules WHERE id=?")) {
+                preparedStatement.setLong(1, id);
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (!resultSet.next()) return Optional.empty();
+                    return Optional.of(assembleRuleFromResultSet(resultSet));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    @Override
     public Collection<Rule> getAll() {
         Collection<Rule> collection = new ArrayList<>();
-        try (PreparedStatement preparedStatement = super.dataSource.getConnection().prepareStatement("SELECT * FROM rules")) {
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                while (resultSet.next()) {
-                    collection.add(assembleRuleFromResultSet(resultSet));
+        try (Connection connection = super.dataSource.getConnection()) {
+            try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM rules")) {
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    while (resultSet.next()) {
+                        collection.add(assembleRuleFromResultSet(resultSet));
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -62,10 +66,12 @@ public class RuleRepository extends DataSourceBasedRepository<Rule, Long> {
     @Override
     public void save(Rule rule) {
         Preconditions.checkNotNull(rule);
-        try (PreparedStatement preparedStatement = super.dataSource.getConnection().prepareStatement("INSERT INTO rules(item,permission) VALUES (?,?)")) {
-            preparedStatement.setString(1, rule.getItem());
-            preparedStatement.setString(2, rule.getPermission());
-            preparedStatement.execute();
+        try (Connection connection = super.dataSource.getConnection()) {
+            try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO rules(item,permission) VALUES (?,?)")) {
+                preparedStatement.setString(1, rule.getItem());
+                preparedStatement.setString(2, rule.getPermission());
+                preparedStatement.execute();
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -79,9 +85,11 @@ public class RuleRepository extends DataSourceBasedRepository<Rule, Long> {
     @Override
     public void delete(Rule rule) {
         Preconditions.checkNotNull(rule);
-        try (PreparedStatement preparedStatement = super.dataSource.getConnection().prepareStatement("DELETE FROM logs WHERE id=?")) {
-            preparedStatement.setLong(1, rule.getId());
-            preparedStatement.execute();
+        try (Connection connection = super.dataSource.getConnection()) {
+            try (PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM logs WHERE id=?")) {
+                preparedStatement.setLong(1, rule.getId());
+                preparedStatement.execute();
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
