@@ -1,22 +1,28 @@
 package com.layue13.fakeitemcheckerreloaded.ban;
 
 
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
 import org.bukkit.BanList;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.function.Consumer;
 
 public enum BanMethod {
     BUNGEE_BAN(banInfo -> {
-        ByteArrayDataOutput byteArrayDataOutput = ByteStreams.newDataOutput();
-        byteArrayDataOutput.writeUTF("gban");
-        byteArrayDataOutput.writeUTF(banInfo.getPlayer().getDisplayName());
-        byteArrayDataOutput.writeUTF(banInfo.getSource());
-        byteArrayDataOutput.writeUTF(banInfo.getReason());
-        banInfo.getPlugin().getServer().sendPluginMessage(banInfo.getPlugin(), "BungeeBan", byteArrayDataOutput.toByteArray());
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+            try (DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream)) {
+                dataOutputStream.writeUTF("gban");
+                dataOutputStream.writeUTF(banInfo.getPlayer().getUniqueId().toString());
+                dataOutputStream.writeUTF(banInfo.getSource());
+                dataOutputStream.writeUTF(banInfo.getReason());
+            }
+            banInfo.getPlugin().getServer().sendPluginMessage(banInfo.getPlugin(), "BungeeBan", byteArrayOutputStream.toByteArray());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }),
     BUKKIT_BAN(banInfo -> {
         try {
