@@ -15,7 +15,7 @@ public enum BanMethod {
         try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
             try (DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream)) {
                 dataOutputStream.writeUTF("gban");
-                dataOutputStream.writeUTF(banInfo.getPlayer().getUniqueId().toString());
+                dataOutputStream.writeUTF(banInfo.getPlayer().getName());
                 dataOutputStream.writeUTF(banInfo.getSource());
                 dataOutputStream.writeUTF(banInfo.getReason());
             }
