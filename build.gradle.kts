@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.layue13"
-version = "1.0.4"
+version = "2.0.0"
 
 repositories {
     mavenCentral()
@@ -32,7 +32,20 @@ dependencies {
         include("*.jar")
     })
     compileOnly("org.bukkit:bukkit:1.7.10-R0.1-SNAPSHOT")
+    
+    // Database
     implementation("com.zaxxer:HikariCP:4.0.3")
+    
+    // Logging
+    implementation("org.slf4j:slf4j-api:1.7.36")
+    
+    // Configuration
+    implementation("org.spongepowered:configurate-yaml:4.1.2")
+    
+    // Testing
+    testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
+    testImplementation("org.mockito:mockito-core:5.3.1")
+    testImplementation("org.mockito:mockito-junit-jupiter:5.3.1")
 }
 
 val targetJavaVersion = 8
@@ -45,6 +58,10 @@ java {
     }
 }
 
+tasks.withType<Test> {
+    useJUnitPlatform()
+}
+
 tasks.withType<ProcessResources> {
     val props = mapOf("version" to version)
     inputs.properties(props)
@@ -52,4 +69,9 @@ tasks.withType<ProcessResources> {
     filesMatching("*.yml") {
         expand(props)
     }
+}
+
+tasks.shadowJar {
+    archiveClassifier.set("")
+    minimize()
 }

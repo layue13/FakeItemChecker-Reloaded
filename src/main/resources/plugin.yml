@@ -2,12 +2,22 @@ name: FakeItemChecker-Reloaded
 version: '${version}'
 main: com.layue13.fakeitemcheckerreloaded.FakeItemCheckerPlugin
 authors: [ 'Layue13','wshycaa' ]
+description: A modern fake item checker plugin for Minecraft servers
+website: https://github.com/layue13/FakeItemChecker-Reloaded
+
 commands:
   fic:
-    usage: /fic
-    permission: fic.default
+    usage: /fic [reload|add|list|remove|info]
+    description: Main command for FakeItemChecker-Reloaded
+    permission: fic.admin
+
 permissions:
-  fic.default:
+  fic.admin:
+    description: Allows access to all FakeItemChecker commands
     default: op
+  fic.default:
+    description: Basic permission for FakeItemChecker
+    default: op
+
 softdepend:
   - PlayerDataSQL
