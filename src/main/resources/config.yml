@@ -1,12 +1,29 @@
-db:
-  username: root
-  password:
-  url: jdbc:mysql://localhost:3306/fic
-ignored_inventory:
-  - '菜单'
-  - ''
+# FakeItemChecker-Reloaded Configuration
+
+# Database Configuration
+database:
+  url: "jdbc:mysql://localhost:3306/fic"
+  username: "root"
+  password: ""
+  max_pool_size: 10
+  min_idle: 5
+
+# Ignored inventory titles (case-sensitive)
+ignored_inventories:
+  - "菜单"
+  - "Menu"
+  - ""
+
+# Ban configuration
+ban_mode: "BUKKIT_BAN"  # Options: BUNGEE_BAN, BUKKIT_BAN
+ban_reason: "你被ban了"
+
+# Check delay in ticks (20 ticks = 1 second)
+check_delay: 1
+
+# Debug mode (enables detailed logging)
+debug_mode: false
+
 # BanMode Options: BUNGEE_BAN,BUKKIT_BAN
 # BUNGEE_BAN needs the plugin called "BungeeBan", can be downloaded in following url
 # https://www.spigotmc.org/resources/bungeeban.8/
-ban_mode: "BUKKIT_BAN"
-ban_reason: "你被ban了"
